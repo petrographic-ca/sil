@@ -7,6 +7,7 @@ authors = ["edoules <ema@uoguelph.ca>"]
 [tool.poetry.dependencies]
 python = "^3.10"
 Pillow = "^9.0.1"
+numpy = "^1.22.3"
 
 [tool.poetry.dev-dependencies]
 
