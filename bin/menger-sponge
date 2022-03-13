@@ -1,0 +1,17 @@
+#!/usr/bin/env python3
+"""
+- 720 x 729 x 729
+- 6 iterations
+- Solid: 255
+- Pore: 0
+"""
+
+import PIL
+
+
+def main():
+    pass
+
+
+if __name__ == '__main__':
+    main()
