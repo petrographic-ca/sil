@@ -1,0 +1,66 @@
+#!/usr/bin/env python3
+"""
+just create a menger sponge as a tif imagestack w these params
+- 729 x 729 x 729
+- 6 iterations
+- Solid: 255
+- Pore: 0
+"""
+
+import os
+import sys
+
+import numpy as np
+from PIL import Image
+
+
+V_VOID = 0
+V_SOLID = 255
+
+
+def value(it: int, x: int, y: int, z: int) -> int:
+    # where-ever more than one dim is at % 3 == 1, make that void.
+    if it == 0:
+        return V_SOLID
+
+    if (
+            (x // (3**(it-1)) % 3 == 1)
+            + (y // (3**(it-1)) % 3 == 1)
+            + (z // (3**(it-1)) % 3 == 1) > 1  # if only there was a bool way
+        ):
+        return V_VOID
+
+    return value(it-1, x, y, z)  # hahaha leap of faith! <3
+
+
+def main(iterations = 1, file_path = './', file_prefix = '') -> None:
+    # since we've frozen the number of iterations
+    # we can just define a fn like m(x,y,z)
+    # whose interior does a query foreach pixel
+    # break on the first iteration that's a void, so bool-and or just multiply
+
+    os.makedirs(file_path, exist_ok=True)
+
+    diameter = 3**iterations
+
+    file_index_digits = len(str(diameter))
+
+    for z in range(diameter):
+        Y = np.fromiter((
+                value(iterations, x, y, z)
+                for y in range(diameter)
+                for x in range(diameter)
+            ), dtype=np.uint8).reshape((diameter, diameter))
+        Image.fromarray(Y).save(
+            f'{file_path}/{file_prefix}{format(z, f"0{file_index_digits}d")}.tif')
+        
+
+if __name__ == '__main__':
+    arg_iters = 6
+    try:
+        arg_iters = int(sys.argv[1])
+    except (IndexError, ValueError):
+        pass
+    if arg_iters > 6:
+        sys.exit('errp - refusing to run on iterations > 6')
+    main(arg_iters, f'menger_{arg_iters}', 'slice_')
