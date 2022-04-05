@@ -23,21 +23,20 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import javax.swing.JLabel;
 import javax.swing.JTextField;
-import java.util.Arrays;
 
 import ij.IJ;
 import ij.ImagePlus;
-import ij.ImageStack;
 import ij.gui.GUI;
 import ij.plugin.frame.PlugInFrame;
-import ij.process.FloatProcessor;
+
+import ca.petrographic.SilLibrary;
 
 
 public class Grey_Ramp extends PlugInFrame implements ActionListener {
 
     static String VERSION = "1.0.0";
 
-    private ImagePlus outPlus;
+    private ImagePlus imagePlus;
 
     Panel optionPanel;
     Panel executePanel;
@@ -92,25 +91,9 @@ public class Grey_Ramp extends PlugInFrame implements ActionListener {
 
     public void actionPerformed(ActionEvent e) {
         if(e.getSource() == jb_ok) {
-            ImageStack outStack = makeGreyRamp(
+            this.imagePlus = SilLibrary.makeGreyRamp(
                 tryInt(jtf_width), tryInt(jtf_height), tryInt(jtf_depth));
-            this.outPlus = new ImagePlus(
-                "grescale_ramp_" + outStack.getWidth() + "_"
-                + outStack.getHeight() + "_" + outStack.getSize(),
-                outStack);
-            this.outPlus.setDisplayRange(
-                0, this.outPlus.getStack().getSize() -1);
-            this.outPlus.show();
+            this.imagePlus.show();
         }
-    }
-
-    ImageStack makeGreyRamp(int width, int height, int nslices) {
-        ImageStack outStack = new ImageStack(width, height);
-        for(int islice = 1; islice <= nslices; islice ++) {
-            int[] raw_data = new int[width * height];
-            Arrays.fill(raw_data, islice);
-            outStack.addSlice(new FloatProcessor(width, height, raw_data));
-        }
-        return outStack;
     }
 }
