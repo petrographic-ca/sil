@@ -1,0 +1,6 @@
+#!/usr/bin/env bash
+set -euo pipefail
+[ -z ${1+x} ] && (
+    echo 'USAGE: <java_version>  # like 1.6 or 18 -- export the result';
+    false)
+echo "JAVA_HOME=$(/usr/libexec/java_home -v $1)"
