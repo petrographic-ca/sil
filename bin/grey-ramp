@@ -1,2 +1,8 @@
 #!/usr/bin/env bash
-/usr/bin/env mvn -q exec:java -D"exec.mainClass"="ca.petrographic.mains.GreyRamp"
+set -euo pipefail
+[ -z ${5+x} ] && (
+    echo 'USAGE: <width:int> <height:int> <depth:int> <target_directory:str> <(JPEG|PNG|TIFF)>';
+    false)
+/usr/bin/env mvn -e -q exec:java \
+    -D'exec.mainClass'='ca.petrographic.mains.GreyRamp' \
+    -D'exec.args'="$1 $2 $3 $4 $5"
