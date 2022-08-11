@@ -9,8 +9,8 @@ import java.util.Arrays;
 public class Bricks {
 
   static String usage =
-      "USAGE: <width:int> <height:int> <depth:int>\n"
-          + "       <brick_width:int> <brick_height:int> <brick_depth:int>\n"
+      "USAGE: <brick_width:int> <brick_height:int> <brick_depth:int>\n"
+          + "       <bricks_wide:int> <bricks_high:int> <bricks_deep:int>\n"
           + "       <margin_thickness:int> <stick_thickness:int>\n"
           + "       <target_directory:str> <(JPEG|PNG|TIFF)>";
 

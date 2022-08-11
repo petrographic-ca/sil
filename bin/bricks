@@ -1,8 +1,8 @@
 #!/usr/bin/env bash
 set -euo pipefail
 [ -z ${10+x} ] && (
-    echo "USAGE: <width:int> <height:int> <depth:int>"
-    echo "       <brick_width:int> <brick_height:int> <brick_depth:int>"
+    echo "USAGE: <brick_width:int> <brick_height:int> <brick_depth:int>"
+    echo "       <bricks_wide:int> <bricks_high:int> <bricks_deep:int>"
     echo "       <margin_thickness:int> <stick_thickness:int>"
     echo "       <target_directory:str> <(JPEG|PNG|TIFF)>"
     false)
