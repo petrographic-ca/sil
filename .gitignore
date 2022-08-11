@@ -24,3 +24,6 @@ hs_err_pid*
 
 # Maven ...
 target/
+
+# Local dev stuff
+_git_ignore/
