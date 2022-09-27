@@ -29,22 +29,42 @@ public class SilLibrary {
             int brick_width, int brick_height, int brick_depth,
             int bricks_wide, int bricks_high, int bricks_deep,
             int margin_thickness, int stick_thickness) {
-        int width =
-            (bricks_wide * brick_width)
-            + ((bricks_wide + 1) * margin_thickness);
-        int height =
-            (bricks_high * brick_height)
-            + ((bricks_high + 1) * margin_thickness);
-        int depth =
-            (bricks_deep * brick_depth)
-            + ((bricks_deep + 1) * margin_thickness);
+        int width = bricks_wide * brick_width
+            + (bricks_wide + 1) * margin_thickness;
+        int height = bricks_high * brick_height
+            + (bricks_high + 1) * margin_thickness;
+        int depth = bricks_deep * brick_depth
+            + (bricks_deep + 1) * margin_thickness;
         ImageStack outStack = new ImageStack(width, height);
-        for(int islice = 1; islice <= depth; islice ++) {
+
+        int width_period = brick_width + margin_thickness;
+        int height_period = brick_height + margin_thickness;
+        int depth_period = brick_depth + margin_thickness;
+
+        for(int id = 1; id <= depth; id ++) {
             byte[] raw_bytes = new byte[width * height];
 
-            // Bricks are White (255); Margins are Black (0) [default];
+            // Bricks are White (0xFF); Margins are Black (0x0) [default];
             // add bricking logic here
             // start in a margin -- encase all bricks in the margin.
+
+            // dial the pixel, and ask if it's a brick or a void --
+            // should just be modular --
+            // one dimension first -- width;
+
+            for(int iw = 0; iw < width; iw ++) {
+                for(int ih = 0; ih < height; ih ++) {
+                    boolean plane_w =
+                        iw % width_period > ;
+                    if (iw % width_period > margin_thickness &&
+                        ih % height_period > margin_thickness &&
+                        id % depth_period > margin_thickness ||
+                        plane_w
+                    ) {
+                        raw_bytes[ih * width + iw] = (byte)0xFF;
+                    }
+                }
+            }
 
             outStack.addSlice(new ByteProcessor(width, height, raw_bytes));
         }

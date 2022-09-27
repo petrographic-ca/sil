@@ -29,36 +29,37 @@ public class Bricks {
     int stick_thickness = 0;
 
     try {
-      width = Integer.parseInt(argv[0]);
-      height = Integer.parseInt(argv[1]);
-      depth = Integer.parseInt(argv[2]);
+        width = Integer.parseInt(argv[0]);
+        height = Integer.parseInt(argv[1]);
+        depth = Integer.parseInt(argv[2]);
 
-      brick_width = Integer.parseInt(argv[3]);
-      brick_height = Integer.parseInt(argv[4]);
-      brick_depth = Integer.parseInt(argv[5]);
+        brick_width = Integer.parseInt(argv[3]);
+        brick_height = Integer.parseInt(argv[4]);
+        brick_depth = Integer.parseInt(argv[5]);
 
-      margin_thickness = Integer.parseInt(argv[6]);
-      stick_thickness = Integer.parseInt(argv[7]);
+        margin_thickness = Integer.parseInt(argv[6]);
+        stick_thickness = Integer.parseInt(argv[7]);
     } catch (NumberFormatException nfe) {
-      System.err.println(usage);
-      return;
+        System.err.println(usage);
+        return;
     }
 
     String target_dir = argv[8].trim();
     if (target_dir.charAt(target_dir.length() - 1) != '/') {
-      target_dir += '/';
+        target_dir += '/';
     }
     if (!(new File(target_dir)).isDirectory()) {
-      System.err.println("ERROR: target_directory does not exist.");
-      return;
+        System.err.println("ERROR: target_directory does not exist.");
+        return;
     }
 
     String format = argv[9].trim();
     if (!Arrays.asList("JPEG", "PNG", "TIFF").contains(format)) {
-      // TODO: not sure if our lab needs other formats from the list below ...
-      // https://github.com/imagej/ImageJ/blob/49757a4485ad727b0f2ece5aa2964f8c8d7924a4/ij/plugin/StackWriter.java#L19
-      System.err.println("ERROR: format should be one of `JPEG`, `PNG`, or `TIFF`.");
-      return;
+        // TODO: not sure if our lab needs other formats from the list below ...
+        // https://github.com/imagej/ImageJ/blob/49757a4485ad727b0f2ece5aa2964f8c8d7924a4/ij/plugin/StackWriter.java#L19
+        System.err.println(
+            "ERROR: format should be one of `JPEG`, `PNG`, or `TIFF`.");
+        return;
     }
 
     ImagePlus imp =
