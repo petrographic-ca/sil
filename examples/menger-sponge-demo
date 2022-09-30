@@ -1,0 +1,7 @@
+#!/usr/bin/env bash
+set -euo pipefail
+
+rm -f ./demo/menger-sponge/*
+mkdir -p ./demo/menger-sponge/
+poetry install
+poetry run ./bin/menger-sponge 3 ./demo/menger-sponge/ TIFF
