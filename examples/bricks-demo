@@ -1,0 +1,7 @@
+#!/usr/bin/env bash
+set -euo pipefail
+
+rm -f ./demo/bricks/*
+mkdir -p ./demo/bricks
+./scripts/mvn-compile
+./bin/bricks 33 47 22 5 4 3 12 7 ./demo/bricks TIFF

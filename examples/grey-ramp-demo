@@ -1,0 +1,7 @@
+#!/usr/bin/env bash
+set -euo pipefail
+
+rm -f ./demo/grey-ramp/*
+mkdir -p ./demo/grey-ramp/
+./scripts/mvn-compile
+./bin/grey-ramp 60 40 256 ./demo/grey-ramp/ JPEG
