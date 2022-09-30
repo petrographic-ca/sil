@@ -26,40 +26,51 @@ public class SilLibrary {
     }
 
     static public ImagePlus makeBricks(
-            int brick_width, int brick_height, int brick_depth,
+            int brick_w, int brick_h, int brick_d,
             int bricks_wide, int bricks_high, int bricks_deep,
-            int margin_thickness, int stick_thickness) {
-        int width = bricks_wide * brick_width
-            + (bricks_wide + 1) * margin_thickness;
-        int height = bricks_high * brick_height
-            + (bricks_high + 1) * margin_thickness;
-        int depth = bricks_deep * brick_depth
-            + (bricks_deep + 1) * margin_thickness;
+            int margin, int stick) {
+        int width = bricks_wide * brick_w + (bricks_wide + 1) * margin;
+        int height = bricks_high * brick_h + (bricks_high + 1) * margin;
+        int depth = bricks_deep * brick_d + (bricks_deep + 1) * margin;
         ImageStack outStack = new ImageStack(width, height);
 
-        int width_period = brick_width + margin_thickness;
-        int height_period = brick_height + margin_thickness;
-        int depth_period = brick_depth + margin_thickness;
+        int period_w = brick_w + margin;
+        int period_h = brick_h + margin;
+        int period_d = brick_d + margin;
 
-        for(int id = 1; id <= depth; id ++) {
+        for(int id = 0; id < depth; id ++) {  // 0-index ok bc appending hehehe
             byte[] raw_bytes = new byte[width * height];
 
-            // Bricks are White (0xFF); Margins are Black (0x0) [default];
-            // add bricking logic here
-            // start in a margin -- encase all bricks in the margin.
+            /*  Bricks are White (0xFF); Margins are Black (0x0) [default];
 
-            // dial the pixel, and ask if it's a brick or a void --
-            // should just be modular --
-            // one dimension first -- width;
+            Plane Arith -- plane_w, plane_h, plane_d
+
+            |-M-|         |--S--|         |-M-|  - [M]argin
+            |   |         |     |         |   |  - [S]tick
+            |   |---------|-----|---------|   |  - brick [W]idth
+            |---|                         |---|  - [P]eriod
+            |   |------------W------------|   |
+            |                             |   |
+            |--------------P--------------|   |
+            |                             |   |  */
 
             for(int iw = 0; iw < width; iw ++) {
                 for(int ih = 0; ih < height; ih ++) {
                     boolean plane_w =
-                        iw % width_period > ;
-                    if (iw % width_period > margin_thickness &&
-                        ih % height_period > margin_thickness &&
-                        id % depth_period > margin_thickness ||
-                        plane_w
+                        (int)(period_w + iw - margin - brick_w/2. + stick/2.)
+                        % period_w < stick;
+                    boolean plane_h =
+                        (int)(period_h + ih - margin - brick_h/2. + stick/2.)
+                        % period_h < stick;
+                    boolean plane_d =
+                        (int)(period_d + id - margin - brick_d/2. + stick/2.)
+                        % period_d < stick;
+                    if (iw % period_w >= margin &&
+                        ih % period_h >= margin &&
+                        id % period_d >= margin ||
+                        plane_w && plane_h ||
+                        plane_w && plane_d ||
+                        plane_h && plane_d
                     ) {
                         raw_bytes[ih * width + iw] = (byte)0xFF;
                     }
