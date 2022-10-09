@@ -1,0 +1,10 @@
+#!/usr/bin/env bash
+set -euo pipefail
+
+[ -d './demo/bricks/' ] || ( \
+    echo './demo/bricks/ does not exist -- first run ./examples/bricks-demo' \
+    && exit 1)
+rm -f ./demo/slope-cycle/*
+mkdir -p ./demo/slope-cycle
+./scripts/mvn-compile
+./bin/slope-cycle .25 -.5 3. 1 ./demo/bricks ./demo/slope-cycle TIFF

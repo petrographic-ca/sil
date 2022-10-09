@@ -25,6 +25,17 @@ public class SilLibrary {
         return outPlus;
     }
 
+    static public ImagePlus makeSlopeCycle(
+            ImagePlus source,
+            double slope_xy, double slope_xz, double slope_yz, boolean cycle) {
+        System.out.println(source.getStack().getSize());
+        System.out.println(slope_xy);
+        System.out.println(slope_xz);
+        System.out.println(slope_yz);
+        System.out.println(cycle);
+        return source;
+    }
+
     static public ImagePlus makeBricks(
             int brick_w, int brick_h, int brick_d,
             int bricks_wide, int bricks_high, int bricks_deep,
