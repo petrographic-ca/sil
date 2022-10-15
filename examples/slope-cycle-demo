@@ -7,4 +7,4 @@ set -euo pipefail
 rm -f ./demo/slope-cycle/*
 mkdir -p ./demo/slope-cycle
 ./scripts/mvn-compile
-./bin/slope-cycle .25 -.5 3. 1 ./demo/bricks ./demo/slope-cycle TIFF
+./bin/slope-cycle .25 -.5 3. 1 0 ./demo/bricks ./demo/slope-cycle TIFF

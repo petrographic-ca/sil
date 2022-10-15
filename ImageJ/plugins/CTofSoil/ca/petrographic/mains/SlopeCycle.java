@@ -11,7 +11,7 @@ public class SlopeCycle {
 
   static String usage =
       "USAGE: <slope+xy:double> <slope+xz:double> <slope+yz:double>\n"
-          + "       <cycle:int(0|1)>\n"
+          + "       <cycle:int(0|1)> <antialias:int(0|1)>\n"
           + "       <source_directory:str> <target_directory:str>\n"
           + "       <(JPEG|PNG|TIFF)>";
 
@@ -22,18 +22,20 @@ public class SlopeCycle {
     double slope_xz = 0;
     double slope_yz = 0;
     boolean cycle = false;
+    boolean antialias = false;
 
     try {
         slope_xy = Double.parseDouble(argv[0]);
         slope_xz = Double.parseDouble(argv[1]);
         slope_yz = Double.parseDouble(argv[2]);
         cycle = Integer.parseInt(argv[3]) != 0;
+        antialias = Integer.parseInt(argv[4]) != 0;
     } catch (NumberFormatException nfe) {
         System.err.println(usage);
         return;
     }
 
-    String source_directory = argv[4].trim();
+    String source_directory = argv[5].trim();
     if (source_directory.charAt(source_directory.length() - 1) != '/') {
         source_directory += '/';
     }
@@ -42,7 +44,7 @@ public class SlopeCycle {
         return;
     }
 
-    String target_directory = argv[5].trim();
+    String target_directory = argv[6].trim();
     if (target_directory.charAt(target_directory.length() - 1) != '/') {
         target_directory += '/';
     }
@@ -51,7 +53,7 @@ public class SlopeCycle {
         return;
     }
 
-    String format = argv[6].trim();
+    String format = argv[7].trim();
     if (!Arrays.asList("JPEG", "PNG", "TIFF").contains(format)) {
         // TODO: not sure if our lab needs other formats from the list below ...
         // https://github.com/imagej/ImageJ/blob/49757a4485ad727b0f2ece5aa2964f8c8d7924a4/ij/plugin/StackWriter.java#L19
@@ -69,7 +71,8 @@ public class SlopeCycle {
             slope_xy,
             slope_xz,
             slope_yz,
-            cycle);
+            cycle,
+            antialias);
     StackWriter.save(imp, target_directory, "format=" + format + " name=slice_");
   }
 }

@@ -25,15 +25,80 @@ public class SilLibrary {
         return outPlus;
     }
 
+    static public int[] query_slope_cycle_source_coords(
+            int target_x, int target_y, int target_z,
+            double slope_xy, double slope_xz, double slope_yz
+            ) {
+        int x = target_x;
+        int y = target_y;
+        int z = target_z;
+        return new int[]{x, y, z};
+    }
+
     static public ImagePlus makeSlopeCycle(
             ImagePlus source,
-            double slope_xy, double slope_xz, double slope_yz, boolean cycle) {
-        System.out.println(source.getStack().getSize());
-        System.out.println(slope_xy);
-        System.out.println(slope_xz);
-        System.out.println(slope_yz);
-        System.out.println(cycle);
-        return source;
+            double slope_xy, double slope_xz, double slope_yz,
+            boolean cycle, boolean antialias) {
+
+        if(!cycle)
+            System.err.println(
+                "<cycle> must be true in this version");
+        if(antialias)
+            System.err.println(
+                "<antialias> must be false in this version");
+        
+        cycle = true;
+        antialias = false;
+
+        /* Slope [m] is just Delta[Y] / Delta[X]
+
+        +-----+     +-----+         +-----+   +-----+
+        |     |    /     /        /     /     |     |
+        |  .  |   /  .  /       /  .  /      /  .  /
+        |     |  /     /      /     /       |     |
+        +-----+ +-----+     +-----+         +-----+
+         m = 0   m = 1      m = 1/2          m = 2  (approx ... prettied lol)
+
+        Anyway, let's define this in an image processing orientation, since
+        we're going to get funky floating-point-values as parameters --
+
+        To do so, we define the inverse-function, so at each destination pixel,
+        we query that coordinate, and ask where-from it came
+        in the origin image.
+
+        As well, to keep things bounded, we'll use circular permutation
+        (modulus math, "cycle") so we can keep the volumes the same size;
+        later, we'll change this but not now.
+
+        We can use regular floor(R +.5) to get the nearest pixel,
+        and can worry about anti-aliasing instead later.
+        */
+
+        int width = source.getStack().getWidth();
+        int height = source.getStack().getHeight();
+        int depth = source.getStack().getSize();
+
+        ImageStack outStack = new ImageStack(width, height);
+
+        for(int z = 0; z < depth; z ++) {
+            int[] raw_data = new int[width * height];
+            for(int x = 0; x < width; x ++) {
+                for(int y = 0; y < height; y ++) {
+                    int[] src_coords = query_slope_cycle_source_coords(
+                        x, y, z, slope_xy, slope_xz, slope_yz);
+                    int sx = src_coords[0];
+                    int sy = src_coords[1];
+                    int sz = src_coords[2];
+                    raw_data[y*width+x] =
+                        (int)source.getStack().getVoxel(sx, sy, sz);
+                }
+            }
+            outStack.addSlice(new FloatProcessor(width, height, raw_data));
+        }
+
+        return new ImagePlus(
+            "slope_cycle_" + width + "_" + height + "_" + depth,
+            outStack);
     }
 
     static public ImagePlus makeBricks(
