@@ -4,7 +4,7 @@ set -euo pipefail
 [ -d './demo/bricks/' ] || ( \
     echo './demo/bricks/ does not exist -- first run ./examples/bricks-demo' \
     && exit 1)
-rm -f ./demo/slope-cycle/*
-mkdir -p ./demo/slope-cycle
+rm -f ./demo/shear-cycle/*
+mkdir -p ./demo/shear-cycle
 ./scripts/mvn-compile
-./bin/slope-cycle .25 -.5 3. 1 0 ./demo/bricks ./demo/slope-cycle TIFF
+./bin/shear-cycle .25 -.5 2. 1 0 ./demo/bricks ./demo/shear-cycle TIFF

@@ -25,19 +25,34 @@ public class SilLibrary {
         return outPlus;
     }
 
-    static public int[] query_slope_cycle_source_coords(
+    static public int[] query_shear_cycle_source_coords(
             int target_x, int target_y, int target_z,
-            double slope_xy, double slope_xz, double slope_yz
-            ) {
-        int x = target_x;
-        int y = target_y;
-        int z = target_z;
-        return new int[]{x, y, z};
+            int width, int height, int depth,
+            double shear_xy, double shear_xz, double shear_yz) {
+        /* Shear +xy --
+
+        eg applying source -> target w m = +1 ==
+
+        ABCDEF <- ABCDEF
+        ABCDEF <- BCDEFA
+        ABCDEF <- CDEFAB
+
+        source <- target
+        */
+        int source_x = (int)(
+            target_x + (target_y * shear_xy) + (target_z * shear_xz));
+        int source_y = (int)(target_y + (target_z * shear_yz));
+
+        // bark bark! normalize to positive modulus ... wow ...
+        source_x = ((((source_x/width) +1) * width) + source_x) % width;
+        source_y = ((((source_y/height) +1) * height) + source_y) % height;
+
+        return new int[]{source_x, source_y, target_z};
     }
 
-    static public ImagePlus makeSlopeCycle(
+    static public ImagePlus makeShearCycle(
             ImagePlus source,
-            double slope_xy, double slope_xz, double slope_yz,
+            double shear_xy, double shear_xz, double shear_yz,
             boolean cycle, boolean antialias) {
 
         if(!cycle)
@@ -46,18 +61,18 @@ public class SilLibrary {
         if(antialias)
             System.err.println(
                 "<antialias> must be false in this version");
-        
+
         cycle = true;
         antialias = false;
 
-        /* Slope [m] is just Delta[Y] / Delta[X]
+        /* Shear [m] is just Delta[X] / Delta[Y] -- stated opposite of Slope.
 
         +-----+     +-----+         +-----+   +-----+
         |     |    /     /        /     /     |     |
         |  .  |   /  .  /       /  .  /      /  .  /
         |     |  /     /      /     /       |     |
         +-----+ +-----+     +-----+         +-----+
-         m = 0   m = 1      m = 1/2          m = 2  (approx ... prettied lol)
+         m = 0   m = 1       m = 2          m = 1/2  (approx ... prettied lol)
 
         Anyway, let's define this in an image processing orientation, since
         we're going to get funky floating-point-values as parameters --
@@ -84,8 +99,10 @@ public class SilLibrary {
             int[] raw_data = new int[width * height];
             for(int x = 0; x < width; x ++) {
                 for(int y = 0; y < height; y ++) {
-                    int[] src_coords = query_slope_cycle_source_coords(
-                        x, y, z, slope_xy, slope_xz, slope_yz);
+                    int[] src_coords = query_shear_cycle_source_coords(
+                        x, y, z,
+                        width, height, depth,
+                        shear_xy, shear_xz, shear_yz);
                     int sx = src_coords[0];
                     int sy = src_coords[1];
                     int sz = src_coords[2];
@@ -97,7 +114,7 @@ public class SilLibrary {
         }
 
         return new ImagePlus(
-            "slope_cycle_" + width + "_" + height + "_" + depth,
+            "shear_cycle_" + width + "_" + height + "_" + depth,
             outStack);
     }
 
