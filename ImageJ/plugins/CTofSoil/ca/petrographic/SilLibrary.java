@@ -25,10 +25,21 @@ public class SilLibrary {
         return outPlus;
     }
 
-    static public int[] query_shear_cycle_source_coords(
+    static private int query_shear_cycle_coord(
+            int target_a, int target_b, int target_c,
+            int a_max, double shear_ab, double shear_ac) {
+        int source_a = (int)(
+            target_a + (target_b * shear_ab) + (target_c * shear_ac));
+        source_a = ((((source_a/a_max) +1) * a_max) + source_a) % a_max;
+        return source_a;
+    }
+
+    static private int[] query_shear_cycle_source_coords(
             int target_x, int target_y, int target_z,
             int width, int height, int depth,
-            double shear_xy, double shear_xz, double shear_yz) {
+            double shear_xy, double shear_yx,
+            double shear_xz, double shear_zx,
+            double shear_yz, double shear_zy) {
         /* Shear +xy --
 
         eg applying source -> target w m = +1 ==
@@ -39,20 +50,23 @@ public class SilLibrary {
 
         source <- target
         */
-        int source_x = (int)(
-            target_x + (target_y * shear_xy) + (target_z * shear_xz));
-        int source_y = (int)(target_y + (target_z * shear_yz));
 
-        // bark bark! normalize to positive modulus ... wow ...
-        source_x = ((((source_x/width) +1) * width) + source_x) % width;
-        source_y = ((((source_y/height) +1) * height) + source_y) % height;
+        int x = target_x;
+        int y = target_y;
+        int z = target_z;
 
-        return new int[]{source_x, source_y, target_z};
+        x = query_shear_cycle_coord(x, y, z, width, shear_xy, shear_xz);
+        y = query_shear_cycle_coord(y, x, z, height, shear_yx, shear_yz);
+        z = query_shear_cycle_coord(z, x, y, depth, shear_zx, shear_zy);
+
+        return new int[]{x, y, z};
     }
 
     static public ImagePlus makeShearCycle(
             ImagePlus source,
-            double shear_xy, double shear_xz, double shear_yz,
+            double shear_xy, double shear_yx,
+            double shear_xz, double shear_zx,
+            double shear_yz, double shear_zy,
             boolean cycle, boolean antialias) {
 
         if(!cycle)
@@ -88,7 +102,6 @@ public class SilLibrary {
         We can use regular floor(R +.5) to get the nearest pixel,
         and can worry about anti-aliasing instead later.
         */
-
         int width = source.getStack().getWidth();
         int height = source.getStack().getHeight();
         int depth = source.getStack().getSize();
@@ -102,7 +115,9 @@ public class SilLibrary {
                     int[] src_coords = query_shear_cycle_source_coords(
                         x, y, z,
                         width, height, depth,
-                        shear_xy, shear_xz, shear_yz);
+                        shear_xy, shear_yx,
+                        shear_xz, shear_zx,
+                        shear_yz, shear_zy);
                     int sx = src_coords[0];
                     int sy = src_coords[1];
                     int sz = src_coords[2];

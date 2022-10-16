@@ -7,4 +7,4 @@ set -euo pipefail
 rm -f ./demo/shear-cycle/*
 mkdir -p ./demo/shear-cycle
 ./scripts/mvn-compile
-./bin/shear-cycle .25 -.5 2. 1 0 ./demo/bricks ./demo/shear-cycle TIFF
+./bin/shear-cycle .5 .3 3 .02 2 .01 1 0 ./demo/bricks ./demo/shear-cycle TIFF
