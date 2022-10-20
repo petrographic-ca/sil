@@ -25,6 +25,102 @@ public class SilLibrary {
         return outPlus;
     }
 
+    static private int query_shear_cycle_coord(
+            int target_a, int target_b, int target_c,
+            int a_max, double shear_ab, double shear_ac) {
+        int source_a = (int)(
+            target_a + (target_b * shear_ab) + (target_c * shear_ac));
+        source_a = ((((source_a/a_max) +1) * a_max) + source_a) % a_max;
+        return source_a;
+    }
+
+    static private int[] query_shear_cycle_source_coords(
+            int target_x, int target_y, int target_z,
+            int width, int height, int depth,
+            double shear_xy, double shear_yx,
+            double shear_xz, double shear_zx,
+            double shear_yz, double shear_zy) {
+        /* Shear +xy --
+
+        eg applying source -> target w m = +1 ==
+
+        ABCDEF <- ABCDEF
+        ABCDEF <- BCDEFA
+        ABCDEF <- CDEFAB
+
+        source <- target
+        */
+
+        int x = target_x;
+        int y = target_y;
+        int z = target_z;
+
+        x = query_shear_cycle_coord(x, y, z, width, shear_xy, shear_xz);
+        y = query_shear_cycle_coord(y, x, z, height, shear_yx, shear_yz);
+        z = query_shear_cycle_coord(z, x, y, depth, shear_zx, shear_zy);
+
+        return new int[]{x, y, z};
+    }
+
+    static public ImagePlus makeShearCycle(
+            ImagePlus source,
+            double shear_xy, double shear_yx,
+            double shear_xz, double shear_zx,
+            double shear_yz, double shear_zy) {
+        /* Shear [m] is just Delta[X] / Delta[Y] -- stated opposite of Slope.
+
+        +-----+     +-----+         +-----+   +-----+
+        |     |    /     /        /     /     |     |
+        |  .  |   /  .  /       /  .  /      /  .  /
+        |     |  /     /      /     /       |     |
+        +-----+ +-----+     +-----+         +-----+
+         m = 0   m = 1       m = 2          m = 1/2  (approx ... prettied lol)
+
+        Anyway, let's define this in an image processing orientation, since
+        we're going to get funky floating-point-values as parameters --
+
+        To do so, we define the inverse-function, so at each destination pixel,
+        we query that coordinate, and ask where-from it came
+        in the origin image.
+
+        As well, to keep things bounded, we'll use circular permutation
+        (modulus math, "cycle") so we can keep the volumes the same size;
+        later, we'll change this but not now.
+
+        We can use regular floor(R +.5) to get the nearest pixel,
+        and can worry about anti-aliasing instead later.
+        */
+        int width = source.getStack().getWidth();
+        int height = source.getStack().getHeight();
+        int depth = source.getStack().getSize();
+
+        ImageStack outStack = new ImageStack(width, height);
+
+        for(int z = 0; z < depth; z ++) {
+            int[] raw_data = new int[width * height];
+            for(int x = 0; x < width; x ++) {
+                for(int y = 0; y < height; y ++) {
+                    int[] src_coords = query_shear_cycle_source_coords(
+                        x, y, z,
+                        width, height, depth,
+                        shear_xy, shear_yx,
+                        shear_xz, shear_zx,
+                        shear_yz, shear_zy);
+                    int sx = src_coords[0];
+                    int sy = src_coords[1];
+                    int sz = src_coords[2];
+                    raw_data[y*width+x] =
+                        (int)source.getStack().getVoxel(sx, sy, sz);
+                }
+            }
+            outStack.addSlice(new FloatProcessor(width, height, raw_data));
+        }
+
+        return new ImagePlus(
+            source.getTitle() + "_shear_cycle",
+            outStack);
+    }
+
     static public ImagePlus makeBricks(
             int brick_w, int brick_h, int brick_d,
             int bricks_wide, int bricks_high, int bricks_deep,
