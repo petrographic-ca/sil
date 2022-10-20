@@ -117,7 +117,7 @@ public class SilLibrary {
         }
 
         return new ImagePlus(
-            "shear_cycle_" + width + "_" + height + "_" + depth,
+            source.getTitle() + "_shear_cycle",
             outStack);
     }
 
