@@ -11,7 +11,6 @@ public class ShearCycle {
 
   static String usage =
       "USAGE: <xy:fpv> <yx:fpv> <xz:fpv> <zx:fpv> <yz:fpv> <zy:fpv>\n"
-          + "       <cycle:int(0|1)> <antialias:int(0|1)>\n"
           + "       <source_directory:str> <target_directory:str>\n"
           + "       <(JPEG|PNG|TIFF)>";
 
@@ -24,8 +23,6 @@ public class ShearCycle {
     double shear_zx = 0;
     double shear_yz = 0;
     double shear_zy = 0;
-    boolean cycle = false;
-    boolean antialias = false;
 
     try {
       shear_xy = Double.parseDouble(argv[0]);
@@ -34,14 +31,12 @@ public class ShearCycle {
       shear_zx = Double.parseDouble(argv[3]);
       shear_yz = Double.parseDouble(argv[4]);
       shear_zy = Double.parseDouble(argv[5]);
-      cycle = Integer.parseInt(argv[6]) != 0;
-      antialias = Integer.parseInt(argv[7]) != 0;
     } catch (NumberFormatException nfe) {
       System.err.println(usage);
       return;
     }
 
-    String source_directory = argv[8].trim();
+    String source_directory = argv[6].trim();
     if (source_directory.charAt(source_directory.length() - 1) != '/') {
       source_directory += '/';
     }
@@ -50,7 +45,7 @@ public class ShearCycle {
       return;
     }
 
-    String target_directory = argv[9].trim();
+    String target_directory = argv[7].trim();
     if (target_directory.charAt(target_directory.length() - 1) != '/') {
       target_directory += '/';
     }
@@ -59,7 +54,7 @@ public class ShearCycle {
       return;
     }
 
-    String format = argv[10].trim();
+    String format = argv[8].trim();
     if (!Arrays.asList("JPEG", "PNG", "TIFF").contains(format)) {
       // TODO: not sure if our lab needs other formats from the list below ...
       // https://github.com/imagej/ImageJ/blob/49757a4485ad727b0f2ece5aa2964f8c8d7924a4/ij/plugin/StackWriter.java#L19
@@ -78,9 +73,7 @@ public class ShearCycle {
             shear_xz,
             shear_zx,
             shear_yz,
-            shear_zy,
-            cycle,
-            antialias
+            shear_zy
         );
     StackWriter.save(imp, target_directory, "format=" + format + " name=slice_");
   }

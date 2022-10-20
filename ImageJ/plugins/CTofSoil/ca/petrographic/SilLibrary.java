@@ -66,19 +66,7 @@ public class SilLibrary {
             ImagePlus source,
             double shear_xy, double shear_yx,
             double shear_xz, double shear_zx,
-            double shear_yz, double shear_zy,
-            boolean cycle, boolean antialias) {
-
-        if(!cycle)
-            System.err.println(
-                "<cycle> must be true in this version");
-        if(antialias)
-            System.err.println(
-                "<antialias> must be false in this version");
-
-        cycle = true;
-        antialias = false;
-
+            double shear_yz, double shear_zy) {
         /* Shear [m] is just Delta[X] / Delta[Y] -- stated opposite of Slope.
 
         +-----+     +-----+         +-----+   +-----+
