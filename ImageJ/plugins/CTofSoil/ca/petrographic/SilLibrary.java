@@ -2,6 +2,7 @@ package ca.petrographic;
 
 import java.util.Arrays;
 
+import ij.IJ;  // IJ.log is always available, even when headless;
 import ij.ImagePlus;
 import ij.ImageStack;
 import ij.process.ByteProcessor;
@@ -94,9 +95,12 @@ public class SilLibrary {
         int height = source.getStack().getHeight();
         int depth = source.getStack().getSize();
 
+        IJ.log("starting on " + source.getTitle() + "...");
         ImageStack outStack = new ImageStack(width, height);
 
         for(int z = 0; z < depth; z ++) {
+            IJ.log("slice " + z + ":" + depth);
+
             int[] raw_data = new int[width * height];
             for(int x = 0; x < width; x ++) {
                 for(int y = 0; y < height; y ++) {
@@ -116,9 +120,8 @@ public class SilLibrary {
             outStack.addSlice(new FloatProcessor(width, height, raw_data));
         }
 
-        return new ImagePlus(
-            source.getTitle() + "_shear_cycle",
-            outStack);
+        IJ.log("done.");
+        return new ImagePlus(source.getTitle() + "_shear_cycle", outStack);
     }
 
     static public ImagePlus makeBricks(
