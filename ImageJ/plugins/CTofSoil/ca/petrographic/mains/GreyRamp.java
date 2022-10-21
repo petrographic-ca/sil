@@ -9,7 +9,7 @@ import java.util.Arrays;
 public class GreyRamp {
 
   static String usage =
-      "USAGE: <width:int> <height:int> <depth:int> <target_directory:str> <(JPEG|PNG|TIFF)>";
+    "USAGE: <width:int> <height:int> <depth:int> <target_directory:str> <(JPEG|PNG|TIFF)>";
 
   public static void main(String argv[]) {
     System.setProperty("java.awt.headless", "true"); // suppress IJ GUI

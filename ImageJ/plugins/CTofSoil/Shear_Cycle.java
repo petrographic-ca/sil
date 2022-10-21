@@ -35,7 +35,6 @@ public class Shear_Cycle extends PlugInFrame implements ActionListener {
   static String VERSION = "1.0.0";
 
   private ImagePlus input;
-  private ImagePlus output;
 
   Panel optionPanel;
   Panel executePanel;
@@ -112,26 +111,55 @@ public class Shear_Cycle extends PlugInFrame implements ActionListener {
     jb_ok.setEnabled(false);
   }
 
-  public Double tryDouble(JTextField text_field) {
-        Double val = null;
-        String raw = text_field.getText();
-        try {
-            val = Double.parseDouble(raw);
-        } catch (NumberFormatException ex) {
-            IJ.log("Error - need a double (floating point value), but got `"
-                   +raw +"`");
-        }
-        return val;
+  public class ShearCycleThread extends Thread {
+
+    ImagePlus input;
+    double xy;
+    double yx;
+    double xz;
+    double zx;
+    double yz;
+    double zy;
+
+    public ShearCycleThread(
+        ImagePlus input,
+        double xy, double yx, double xz, double zx, double yz, double zy) {
+      this.input = input;
+      this.xy = xy;
+      this.yx = yx;
+      this.xz = xz;
+      this.zx = zx;
+      this.yz = yz;
+      this.zy = zy;
     }
+
+    public void run() {
+      ImagePlus output = SilLibrary.makeShearCycle(
+        this.input, this.xy, this.yx, this.xz, this.zx, this.yz, this.zy);
+      output.show();  // TODO: migrate any GUI methods back to GUI thread!
+    }
+  }
+
+  public static Double tryDouble(JTextField text_field) {
+    Double val = null;
+    String raw = text_field.getText();
+    try {
+        val = Double.parseDouble(raw);
+    } catch (NumberFormatException ex) {
+        IJ.log("Error - need a double (floating point value), but got `"
+               +raw +"`");
+    }
+    return val;
+  }
 
   public void actionPerformed(ActionEvent e) {
     if (e.getSource() == jb_ok) {
-      this.output = SilLibrary.makeShearCycle(
+      Thread thread = new ShearCycleThread(
         this.input,
         tryDouble(this.jtf_xy), tryDouble(this.jtf_yx),
         tryDouble(this.jtf_xz), tryDouble(this.jtf_zx),
         tryDouble(this.jtf_yz), tryDouble(this.jtf_zy));
-      this.output.show();
+      thread.start();  // TODO: make this safer -- .join() inside an executor
     }
   }
 }
