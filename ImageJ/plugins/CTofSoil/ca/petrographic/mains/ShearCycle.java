@@ -10,9 +10,9 @@ import java.util.Arrays;
 public class ShearCycle {
 
   static String usage =
-      "USAGE: <xy:fpv> <yx:fpv> <xz:fpv> <zx:fpv> <yz:fpv> <zy:fpv>\n"
-          + "       <source_directory:str> <target_directory:str>\n"
-          + "       <(JPEG|PNG|TIFF)>";
+    "USAGE: <xy:fpv> <yx:fpv> <xz:fpv> <zx:fpv> <yz:fpv> <zy:fpv>\n"
+      + "       <source_directory:str> <target_directory:str>\n"
+      + "       <(JPEG|PNG|TIFF)>";
 
   public static void main(String argv[]) {
     System.setProperty("java.awt.headless", "true"); // suppress IJ GUI
@@ -66,15 +66,15 @@ public class ShearCycle {
     ImagePlus source_stack = FolderOpener.open(source_directory);
 
     ImagePlus imp =
-        SilLibrary.makeShearCycle(
-            source_stack,
-            shear_xy,
-            shear_yx,
-            shear_xz,
-            shear_zx,
-            shear_yz,
-            shear_zy
-        );
+      SilLibrary.makeShearCycle(
+        source_stack,
+        shear_xy,
+        shear_yx,
+        shear_xz,
+        shear_zx,
+        shear_yz,
+        shear_zy
+      );
     StackWriter.save(imp, target_directory, "format=" + format + " name=slice_");
   }
 }
