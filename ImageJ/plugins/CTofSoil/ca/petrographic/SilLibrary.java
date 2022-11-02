@@ -31,7 +31,9 @@ public class SilLibrary {
             int a_max, double shear_ab, double shear_ac) {
         int source_a = (int)(
             target_a + (target_b * shear_ab) + (target_c * shear_ac));
-        source_a = ((((source_a/a_max) +1) * a_max) + source_a) % a_max;
+        source_a = (((
+            (source_a / a_max) + 10  // TODO: 10 is a big correction :(
+            ) * a_max) + source_a) % a_max;
         return source_a;
     }
 
@@ -95,11 +97,9 @@ public class SilLibrary {
         int height = source.getStack().getHeight();
         int depth = source.getStack().getSize();
 
-        IJ.log("starting on " + source.getTitle() + "...");
         ImageStack outStack = new ImageStack(width, height);
 
         for(int z = 0; z < depth; z ++) {
-            IJ.log("slice " + z + ":" + depth);
 
             int[] raw_data = new int[width * height];
             for(int x = 0; x < width; x ++) {
@@ -120,7 +120,6 @@ public class SilLibrary {
             outStack.addSlice(new FloatProcessor(width, height, raw_data));
         }
 
-        IJ.log("done.");
         return new ImagePlus(source.getTitle() + "_shear_cycle", outStack);
     }
 

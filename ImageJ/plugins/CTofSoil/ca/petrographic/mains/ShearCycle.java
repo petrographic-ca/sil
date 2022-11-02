@@ -41,7 +41,8 @@ public class ShearCycle {
       source_directory += '/';
     }
     if (!(new File(source_directory)).isDirectory()) {
-      System.err.println("ERROR: source_directory does not exist.");
+      System.err.println(
+        "ERROR: source_directory does not exist `" + source_directory + "`.");
       return;
     }
 
@@ -50,7 +51,8 @@ public class ShearCycle {
       target_directory += '/';
     }
     if (!(new File(target_directory)).isDirectory()) {
-      System.err.println("ERROR: target_directory does not exist.");
+      System.err.println(
+        "ERROR: target_directory does not exist `" + target_directory + "`.");
       return;
     }
 
@@ -58,7 +60,8 @@ public class ShearCycle {
     if (!Arrays.asList("JPEG", "PNG", "TIFF").contains(format)) {
       // TODO: not sure if our lab needs other formats from the list below ...
       // https://github.com/imagej/ImageJ/blob/49757a4485ad727b0f2ece5aa2964f8c8d7924a4/ij/plugin/StackWriter.java#L19
-      System.err.println("ERROR: format should be one of `JPEG`, `PNG`, or `TIFF`.");
+      System.err.println(
+        "ERROR: format should be one of `JPEG`, `PNG`, or `TIFF`.");
       return;
     }
 
@@ -75,6 +78,7 @@ public class ShearCycle {
         shear_yz,
         shear_zy
       );
-    StackWriter.save(imp, target_directory, "format=" + format + " name=slice_");
+    StackWriter.save(
+        imp, target_directory, "format=" + format + " name=slice_");
   }
 }
