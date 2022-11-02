@@ -144,14 +144,10 @@ public class Shear_Cycle extends PlugInFrame
     }
 
     public void run() {
-      IJ.log("entering shear cycle logic here");
       ImagePlus output = SilLibrary.makeShearCycle(
         this.input, this.xy, this.yx, this.xz, this.zx, this.yz, this.zy);
-      IJ.log("exiting shear cycle logic here");
-
-      // TODO: migrate any GUI methods back to GUI thread!
-      output.show();
-      this.frame.enable_gui();
+      output.show();  // TODO: GUI methods mv back to GUI thread
+      this.frame.enable_gui();  // TODO: GUI methods mv back to GUI thread
     }
   }
 
@@ -170,9 +166,8 @@ public class Shear_Cycle extends PlugInFrame
   public void actionPerformed(ActionEvent e) {
     if (e.getSource() == jb_ok && this.is_enabled()) {
       this.disable_gui();
-      IJ.log("button pressed");
       if(this.input == null) {
-        IJ.log("input disappeared -- nothing to do");
+        IJ.log("Input disappeared -- nothing to do");
         this.enable_gui();
         return;
       }
@@ -187,13 +182,17 @@ public class Shear_Cycle extends PlugInFrame
   }
 
   public void windowActivated(WindowEvent e) {
-    IJ.log("window focus");
     if(this.is_enabled()) {
+      String prev_title = this.input == null ? "" : this.input.getTitle();
       this.input = WindowManager.getCurrentImage();
       if(this.input == null) {
         this.jtf_input.setText(INIT_INPUT_FIELD);
       } else {
-        this.jtf_input.setText(this.input.getTitle());
+        String curr_title = this.input.getTitle();
+        this.jtf_input.setText(curr_title);
+        if(curr_title != prev_title) {
+            IJ.log("Input selected -- `" + this.input.getTitle() + "`");
+        }
       }
     }
   }
